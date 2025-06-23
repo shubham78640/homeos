@@ -23,11 +23,14 @@ import {
   Crown,
   Eye,
   EyeOff,
- FileUser
+ FileUser,
+  Moon,
+  Sun,
 } from 'lucide-react';
-
+import { useTheme } from 'next-themes';
+import { useRouter } from "next/navigation";
 import { useAuth } from '../context/AuthContext'; // Import useAuth
-
+import ProtectedLayout from "../../components/ProtectedLayout"
 
 
 export default function ProfilePage() {
@@ -39,6 +42,10 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+    const { theme, setTheme } = useTheme();
+   const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
    console.log("patrdon", patronDetails)
   
@@ -74,7 +81,7 @@ export default function ProfilePage() {
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'userDetails', label: 'User Details', icon: FileUser },
     // { id: 'preferences', label: 'Preferences', icon: Shield },
-    // { id: 'settings', label: 'Settings', icon: Settings }
+     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const handleSave = () => {
@@ -641,8 +648,20 @@ export default function ProfilePage() {
   );
 
   const renderSecurityTab = () => (
-    <div className="space-y-6">
-      <div className="bg-card border border-border rounded-lg p-6">
+    <div className="space-y-6 ">
+      <div className="flex bg-card border border-border rounded-lg p-6">
+        <h4 className='text-lg font-semibold text-card-foreground p-2'>Theme</h4>
+  <button
+              onClick={toggleTheme}
+              className="rounded-md p-2 ml-4 text-foreground hover:bg-accent transition-colors"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </button>
+
       {/* <h3 className="text-lg font-semibold text-card-foreground mb-4">Change Password</h3> */}
         {/* <div className="space-y-4 max-w-md">
           <div className="space-y-2">
@@ -688,7 +707,7 @@ export default function ProfilePage() {
         </div> */}
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-6">
+      {/* <div className="bg-card border border-border rounded-lg p-6">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">Two-Factor Authentication</h3>
         <div className="flex items-center justify-between">
           <div>
@@ -708,12 +727,12 @@ export default function ProfilePage() {
             />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 
   return (
-    <Sidebar>
+    <ProtectedLayout>
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b border-border bg-background px-4 py-6 sm:px-6 lg:px-8">
@@ -759,19 +778,19 @@ export default function ProfilePage() {
           <div className="mx-auto max-w-7xl">
             {activeTab === 'profile' && renderProfileTab()}
             {activeTab === 'userDetails' && renderUserDetailsTab()}
-            {/* {activeTab === 'preferences' && renderPreferencesTab()}
-            {activeTab === 'settings' && renderSecurityTab()} */}
+            {/* {activeTab === 'preferences' && renderPreferencesTab()} */}
+            {activeTab === 'settings' && renderSecurityTab()}
           </div>
         </div>
 
         {/* Mobile Save Button */}
-        <div className="sm:hidden fixed bottom-4 right-4">
+        {/* <div className="sm:hidden fixed bottom-4 right-4">
           <Button className="rounded-full shadow-lg">
             <Save className="w-4 h-4 mr-2" />
             Save
           </Button>
-        </div>
+        </div> */}
       </div>
-    </Sidebar>
+    </ProtectedLayout>
   );
 }

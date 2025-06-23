@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
+import MobileNav from "./MobileNav"
 import {
   Home,
   LogIn,
@@ -30,18 +31,21 @@ import { useTheme } from 'next-themes';
 import { useRouter } from "next/navigation";
 
 const navigationItems = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'Login', href: '/login', icon: LogIn },
-  { name: 'Signup', href: '/signup', icon: UserPlus },
+  // { name: 'Home', href: '/', icon: Home },
+  // { name: 'Login', href: '/login', icon: LogIn },
+  // { name: 'Signup', href: '/signup', icon: UserPlus },
+
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+   { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
+    //  { name: 'My Requests', href: '/my-requests', icon: Inbox },
   // { name: 'Request Service', href: '/request-service', icon: Headphones },
   { name: 'Concierge Chat', href: '/concierge-chat', icon: MessageCircle },
-  { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
-  // { name: 'Schedule', href: '/schedule', icon: Calendar },
+
+  { name: 'My Expense', href: '/my-expenses', icon: Calendar },
   // { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'My Requests', href: '/my-requests', icon: Inbox },
+
   // { name: 'Notifications', href: '/notifications', icon: Bell },
-  { name: 'Search', href: '/search', icon: Search },
+  // { name: 'Search', href: '/search', icon: Search },
   // { name: 'Messages', href: '/messages', icon: Mail },
   { name: 'Profile', href: '/profile', icon: User },
   // { name: 'Settings', href: '/settings', icon: Settings },
@@ -81,7 +85,7 @@ export function Sidebar({ children }) {
           <div className="flex items-center gap-x-4">
             <h1 className="text-xl font-semibold text-foreground">HomeOS</h1>
           </div>
-          <div className="ml-auto flex items-center gap-x-4">
+          {/* <div className="ml-auto flex items-center gap-x-4">
             <button
               onClick={toggleTheme}
               className="rounded-md p-2 text-foreground hover:bg-accent transition-colors"
@@ -92,16 +96,16 @@ export function Sidebar({ children }) {
                 <Moon className="h-5 w-5" />
               )}
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6 pb-4">
-          <div className="flex h-16 shrink-0 items-center justify-between">
+          <div className="flex h-16 shrink-0 items-center justify-center ">
             <h1 className="text-xl font-semibold text-foreground">HomeOS</h1>
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="rounded-md p-2 text-foreground hover:bg-accent transition-colors"
             >
@@ -111,12 +115,12 @@ export function Sidebar({ children }) {
                 <Moon className="h-5 w-5" />
               )}
             </button>
-        
+         */}
           </div>
           <nav className="flex flex-1 flex-col">
-                 <div className="text-sm mb-6 text-gray-600 dark:text-gray-300">
+                 {/* <div className="text-sm mb-6 text-gray-600 dark:text-gray-300">
         {currentUser ? currentUser.email : 'Not logged in'}
-      </div>
+      </div> */}
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
@@ -146,6 +150,10 @@ export function Sidebar({ children }) {
                 </ul>
               </li>
             </ul>
+            <div className='mb-4'>
+                <p>        {currentUser ? currentUser.email : 'Not logged in'}</p>
+            </div>
+                        
             <div className='flex gap-2 cursor-pointer'onClick={handleLogout} >
                <LogOut/><span>Logout</span>
             </div>
@@ -216,6 +224,8 @@ export function Sidebar({ children }) {
           {children}
         </main>
       </div>
+          <MobileNav />
     </div>
+
   );
 }

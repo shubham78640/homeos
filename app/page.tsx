@@ -1,8 +1,11 @@
 import { Sidebar } from '@/components/sidebar';
+import ProtectedLayout from "../components/ProtectedLayout"
 
 export default function Home() {
   return (
-    <Sidebar>
+    // <ProtectedLayout>
+    // <Sidebar>
+    <>
       <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8 text-center">
           <div>
@@ -30,6 +33,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </Sidebar>
+      
+    {/* </Sidebar> */}
+    {/* // </ProtectedLayout> */}
+    </>
   );
 }

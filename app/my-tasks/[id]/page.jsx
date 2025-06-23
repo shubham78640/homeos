@@ -437,7 +437,7 @@ import {
   Flag
 } from 'lucide-react';
 import { doc, getDoc,getFirestore } from 'firebase/firestore';
-
+import ProtectedLayout from "../../../components/ProtectedLayout"
  import { app } from '../../firebase/config'; 
 
  const db = getFirestore(app);
@@ -594,7 +594,7 @@ export default function TaskDetailsPage({ params }) {
   // const StatusIcon = getStatusIcon(taskData.status);
 
   return (
-    <Sidebar>
+    <ProtectedLayout>
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b border-border bg-background px-4 py-6 sm:px-6 lg:px-8">
@@ -864,6 +864,6 @@ export default function TaskDetailsPage({ params }) {
           </div>
         </div>
       </div>
-    </Sidebar>
+    </ProtectedLayout>
   );
 }

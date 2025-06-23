@@ -331,7 +331,7 @@ import {
   SortAsc
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-
+import ProtectedLayout from "../../components/ProtectedLayout"
 
 // Import useAuth and Firestore functions
 import { useAuth } from '../context/AuthContext'; // Adjust path if necessary
@@ -339,6 +339,7 @@ import { collection, query, where, getDocs, doc, getDoc,getFirestore } from 'fir
 // import { db } from '@/firebaseConfig'; // Adjust path if necessary
  import { app } from '../firebase/config'; // Adjust path if necessary
  import { getAuth} from 'firebase/auth';
+ import ShimmerTasks from "../../components/shimmerui/ShimmerTasks"
  const auth = getAuth(app);
  const db = getFirestore(app);
 export default function MyTasksPage() {
@@ -635,18 +636,26 @@ export default function MyTasksPage() {
     // console.log("rrrrrr",filteredTasks)
 
   // --- Combined Loading/Error State for the Page ---
+  // if (authLoading || tasksLoading) {
+  //   return (
+  //     <Sidebar>
+  //       <div className="px-4 py-8 sm:px-6 lg:px-8">
+  //         <div className="mx-auto max-w-7xl">
+  //           <h1 className="text-3xl font-bold tracking-tight text-foreground mb-8">My Tasks</h1>
+  //           <p className="text-muted-foreground">Loading your tasks...</p>
+  //         </div>
+  //       </div>
+  //     </Sidebar>
+  //   );
+  // }
   if (authLoading || tasksLoading) {
-    return (
-      <Sidebar>
-        <div className="px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-8">My Tasks</h1>
-            <p className="text-muted-foreground">Loading your tasks...</p>
-          </div>
-        </div>
-      </Sidebar>
-    );
-  }
+  return (
+    <ProtectedLayout>
+      <ShimmerTasks />
+    </ProtectedLayout>
+  );
+}
+
 
   // if (authDataError || tasksError) {
   //   return (
@@ -678,7 +687,7 @@ export default function MyTasksPage() {
   }
 
   return (
-    <Sidebar>
+    <ProtectedLayout>
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b border-border bg-background px-4 py-6 sm:px-6 lg:px-8">
@@ -854,6 +863,6 @@ export default function MyTasksPage() {
           </div>
         </div>
       </div>
-    </Sidebar>
+    </ProtectedLayout>
   );
 }

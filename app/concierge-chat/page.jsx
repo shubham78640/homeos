@@ -24,6 +24,7 @@ import {
   ShoppingBag,
   Menu as MenuIcon,
 } from "lucide-react";
+import ProtectedLayout from "../../components/ProtectedLayout"
 import { useAuth } from "../context/AuthContext";
 import {
   collection,
@@ -41,6 +42,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { db, storage, auth } from "../firebase/config";
+import ChatShimmer from "../../components/shimmerui/ChatShimmer"
 
 
 export default function ConciergeChatPage() {
@@ -391,7 +393,7 @@ const cancelTask = async (message) => {
 };
 
   return (
-    <Sidebar>
+    <ProtectedLayout>
       <Toaster
   position="top-right"
   reverseOrder={false}
@@ -582,7 +584,7 @@ const cancelTask = async (message) => {
                 </div>
               ))}
 
-              {isLoading && (
+              {/* {isLoading && (
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
                     <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
@@ -597,7 +599,8 @@ const cancelTask = async (message) => {
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
+              {isLoading && <ChatShimmer />}
             </div>
 
             {inputMessage.length <= 0 && (
@@ -630,10 +633,10 @@ const cancelTask = async (message) => {
                 </div> */}
               </div>
             )}
-            <div className="border-t border-border py-4 bg-background">
+            <div className="border-t border-border py-4 bg-background ">
               <form
                 onSubmit={handleSendMessage}
-                className="p-4 border-t flex items-center space-x-2"
+                className="p-4 border-t flex items-center space-x-2 mb-8 sm:mb-0 "
               >
                 <input
                   type="file"
@@ -701,6 +704,6 @@ const cancelTask = async (message) => {
   taskData={selectedTask}
   onUpdate={() => fetchMessages()}
 />
-    </Sidebar>
+    </ProtectedLayout>
   );
 }
