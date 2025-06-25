@@ -22,6 +22,7 @@ import {
   Bell,
   MoreVertical,
   ShoppingBag,
+ 
   Menu as MenuIcon,
 } from "lucide-react";
 import ProtectedLayout from "../../components/ProtectedLayout"
@@ -426,7 +427,7 @@ const cancelTask = async (message) => {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden ">
           <div className="h-full flex flex-col px-4 sm:px-6 lg:px-8">
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
               {messages.map((message) => (

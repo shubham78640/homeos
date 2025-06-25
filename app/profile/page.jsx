@@ -120,7 +120,7 @@ export default function ProfilePage() {
             <div className="relative">
               <div className="w-32 h-32 bg-muted rounded-full flex items-center justify-center">
                 {/* <User className="w-16 h-16 text-muted-foreground" /> */}
-                <img  src="https://img.freepik.com/premium-photo/happy-man-ai-generated-portrait-user-profile_1119669-1.jpg?w=2000" className="w-18 h-18 text-muted-foreground"/>
+                <img  src={patronDetails[0]?.profileImage} className="w-18 h-18 text-muted-foreground"/>
               </div>
               {isEditing && (
                 <button className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">

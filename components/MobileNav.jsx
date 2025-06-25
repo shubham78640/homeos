@@ -10,16 +10,21 @@ import {
   Calendar,
   Bell,
   Menu, User,
-  Inbox
+  Inbox,
+  Bot,
+  BotMessageSquare,
+  ReceiptIndianRupee
 } from 'lucide-react';
 
 const navItems = [
   { name: 'Home', href: '/dashboard', icon: Home },
 //   { name: 'My Requests', href: '/my-requests', icon: Inbox },
+  { name: 'Pinch Ai', href: '/pod-ai', icon: BotMessageSquare },
+   { name: 'Tasks', href: '/my-tasks', icon: CheckSquare },
    { name: 'Chat', href: '/concierge-chat', icon: MessageCircle },
-  { name: 'Tasks', href: '/my-tasks', icon: CheckSquare },
  
-//   { name: 'My Expense', href: '/my-expenses', icon: Calendar },
+ 
+  { name: 'My Expense', href: '/my-expenses', icon: ReceiptIndianRupee },
 
  { name: 'Profile', href: '/profile', icon: User },// or open drawer
 ];

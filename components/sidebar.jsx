@@ -25,7 +25,12 @@ import {
   X,
   Moon,
   Sun,
-  LogOut
+  LogOut,
+  BadgeIndianRupee,
+  ReceiptIndianRupee ,
+  IndianRupee ,
+  Bot,
+  BotMessageSquare
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useRouter } from "next/navigation";
@@ -36,12 +41,13 @@ const navigationItems = [
   // { name: 'Signup', href: '/signup', icon: UserPlus },
 
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Pinch Ai', href: '/pod-ai', icon: BotMessageSquare },
    { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
     //  { name: 'My Requests', href: '/my-requests', icon: Inbox },
   // { name: 'Request Service', href: '/request-service', icon: Headphones },
   { name: 'Concierge Chat', href: '/concierge-chat', icon: MessageCircle },
 
-  { name: 'My Expense', href: '/my-expenses', icon: Calendar },
+  { name: 'My Expense', href: '/my-expenses', icon: ReceiptIndianRupee },
   // { name: 'Documents', href: '/documents', icon: FileText },
 
   // { name: 'Notifications', href: '/notifications', icon: Bell },
