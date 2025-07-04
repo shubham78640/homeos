@@ -19,7 +19,7 @@ import {
 const navItems = [
   { name: 'Home', href: '/dashboard', icon: Home },
 //   { name: 'My Requests', href: '/my-requests', icon: Inbox },
-  { name: 'Pinch Ai', href: '/pod-ai', icon: BotMessageSquare },
+  { name: 'Pinch AI', href: '/pod-ai', icon: BotMessageSquare },
    { name: 'Tasks', href: '/my-tasks', icon: CheckSquare },
    { name: 'Chat', href: '/concierge-chat', icon: MessageCircle },
  

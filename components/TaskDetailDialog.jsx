@@ -127,8 +127,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import { db } from "../app/firebase/config"; 
- import { format } from "date-fns";
+//  import { format } from "date-fns";
  import { Timestamp } from "firebase/firestore";
+ import { format, isValid } from "date-fns";
 
 // adjust as per your file
 
@@ -174,9 +175,19 @@ const TaskDialog = ({ isOpen, onClose, taskData, onUpdate }) => {
     //   console.error("Error cancelling task:", err);
     // }
   };
- const formatDateForInput = (date) => {
+//  const formatDateForInput = (date) => {
+//   if (!date) return "";
+//   return format(new Date(date), "yyyy-MM-dd'T'HH:mm");
+// };
+const formatDateForInput = (date) => {
   if (!date) return "";
-  return format(new Date(date), "yyyy-MM-dd'T'HH:mm");
+
+  const parsedDate = new Date(date);
+
+  // 🔒 Check if it's a valid date before formatting
+  if (!isValid(parsedDate)) return "";
+
+  return format(parsedDate, "yyyy-MM-dd'T'HH:mm");
 };
 
   return (

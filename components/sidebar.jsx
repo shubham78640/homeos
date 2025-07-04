@@ -41,16 +41,16 @@ const navigationItems = [
   // { name: 'Signup', href: '/signup', icon: UserPlus },
 
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Pinch Ai', href: '/pod-ai', icon: BotMessageSquare },
+    { name: 'Pinch AI', href: '/pod-ai', icon: BotMessageSquare },
    { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
     //  { name: 'My Requests', href: '/my-requests', icon: Inbox },
   // { name: 'Request Service', href: '/request-service', icon: Headphones },
   { name: 'Concierge Chat', href: '/concierge-chat', icon: MessageCircle },
 
   { name: 'My Expense', href: '/my-expenses', icon: ReceiptIndianRupee },
-  // { name: 'Documents', href: '/documents', icon: FileText },
+  { name: 'AI Chat', href: '/ai-chat', icon: FileText },
 
-  // { name: 'Notifications', href: '/notifications', icon: Bell },
+  { name: 'Docs', href: '/documents', icon: FileText },
   // { name: 'Search', href: '/search', icon: Search },
   // { name: 'Messages', href: '/messages', icon: Mail },
   { name: 'Profile', href: '/profile', icon: User },
@@ -217,7 +217,10 @@ export function Sidebar({ children }) {
                       })}
                     </ul>
                   </li>
-                </ul>
+                </ul>         
+            <div className='flex gap-2 cursor-pointer mb-12 sm:mb-0'onClick={handleLogout} >
+               <LogOut/><span>Logout</span>
+            </div>
               </nav>
             </div>
           </div>

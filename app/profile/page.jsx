@@ -661,6 +661,7 @@ export default function ProfilePage() {
                 <Moon className="h-5 w-5" />
               )}
             </button>
+         
 
       {/* <h3 className="text-lg font-semibold text-card-foreground mb-4">Change Password</h3> */}
         {/* <div className="space-y-4 max-w-md">

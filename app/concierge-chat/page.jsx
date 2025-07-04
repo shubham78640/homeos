@@ -4,8 +4,8 @@ import { Sidebar } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import  toast ,{ Toaster } from "react-hot-toast";
-import TaskDialog from "../../components/TaskDetailDialog"
+import toast, { Toaster } from "react-hot-toast";
+import TaskDialog from "../../components/TaskDetailDialog";
 import {
   Send,
   Bot,
@@ -22,10 +22,9 @@ import {
   Bell,
   MoreVertical,
   ShoppingBag,
- 
   Menu as MenuIcon,
 } from "lucide-react";
-import ProtectedLayout from "../../components/ProtectedLayout"
+import ProtectedLayout from "../../components/ProtectedLayout";
 import { useAuth } from "../context/AuthContext";
 import {
   collection,
@@ -34,7 +33,7 @@ import {
   serverTimestamp,
   getDoc,
   doc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import {
   ref,
@@ -43,8 +42,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { db, storage, auth } from "../firebase/config";
-import ChatShimmer from "../../components/shimmerui/ChatShimmer"
-
+import ChatShimmer from "../../components/shimmerui/ChatShimmer";
 
 export default function ConciergeChatPage() {
   const [messages, setMessages] = useState([]);
@@ -54,6 +52,7 @@ export default function ConciergeChatPage() {
     patronDetails,
     dataError: authDataError,
   } = useAuth();
+  const [loadingMessages, setLoadingMessages] = useState(true);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -65,40 +64,64 @@ export default function ConciergeChatPage() {
   const [showMenuId, setShowMenuId] = useState(null);
   const longPressTimer = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
-const [selectedTask, setSelectedTask] = useState(null);
-const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (currentUser && currentUser.uid && !userId) {
+      setUserId(currentUser.uid);
+      console.log("✅ User ID loaded once:", currentUser.uid);
+    }
+  }, [currentUser, userId]);
+
+  //console.log("Current Firebase User ID:",userId );
   const displayedPatronId =
     patronDetails.length > 0 ? patronDetails[0].id || "N/A" : "N/A";
   const displayedPatronName =
     patronDetails.length > 0 ? patronDetails[0].patronName || "N/A" : "N/A";
   const displayedLMName =
     patronDetails.length > 0 ? patronDetails[0].assignedLM || "N/A" : "N/A";
-    // const displayedAssignLMName =
-    // patronDetails.length > 0 ? patronDetails[0].id || "N/A" : "N/A";
+  // const displayedAssignLMName =
+  // patronDetails.length > 0 ? patronDetails[0].id || "N/A" : "N/A";
   const displayedBackupLMName =
     patronDetails.length > 0 ? patronDetails[0].backupLmName || "N/A" : "N/A";
   const displayClientCode =
     patronDetails.length > 0 ? patronDetails[0].clientCode || "N/A" : "N/A";
-    const displayNewID =
+  const displayNewID =
     patronDetails.length > 0 ? patronDetails[0].newPatronID || "N/A" : "N/A";
-    const displayNewName =
+  const displayNewName =
     patronDetails.length > 0 ? patronDetails[0].newPatronName || "N/A" : "N/A";
-    const displaypatronBusinessID =
-    patronDetails.length > 0 ? patronDetails[0].patronBusinessID || "N/A" : "N/A";
-    const displayPatronBillingAdress =
+  const displaypatronBusinessID =
+    patronDetails.length > 0
+      ? patronDetails[0].patronBusinessID || "N/A"
+      : "N/A";
+  const displayPatronBillingAdress =
     patronDetails.length > 0 ? patronDetails[0].billingAddress || "N/A" : "N/A";
-     const displayedPatronEmail =
+  const displayedPatronEmail =
     patronDetails.length > 0 ? patronDetails[0].email || "N/A" : "N/A";
-    
 
+  // const backupLmRef = doc(db, "user", );
+  //
+  //   useEffect(() => {
+  //   if (currentUser?.length > 0) {
+  //     console.log("jjiii", patronDetails);
 
-    useEffect(() => {
-  if (patronDetails?.length > 0) {
-    console.log("jjiii", patronDetails);
-  }
-}, [patronDetails]);
-  //  console.log("jjiii",patronDetails)
+  //   }
+  // }, [currentUser]);
 
+  useEffect(() => {
+    if (patronDetails?.length > 0) {
+      console.log("jjiii", patronDetails);
+    }
+  }, [patronDetails]);
+  //const userid = currentUser.uid;
+
+  //
+
+  // console.log("jjiii",userid)
+  // const patronRef = doc(db, "addPatronDetails", displayedPatronId);
   const quickActions = [
     {
       label: "TaskCreate",
@@ -125,6 +148,12 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
     "messages"
   );
 
+  const patronRef1 = doc(db, "addPatronDetails", displayedPatronId);
+  const patronData = patronDetails[0];
+  const lmRef = patronData?.lmRef;
+  //  const lmRef1 = doc(db, "user", userId);
+  // const backupLmRef = doc(db, "user", "UV5Yp1TtfbawV0fwmoTe1q8TLSI3");
+  //console.log("lmRef",lmRef)
   const fetchMessages = async () => {
     try {
       const snapshot = await getDocs(chatRef);
@@ -149,97 +178,144 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
     setImagePreview(URL.createObjectURL(file));
   };
 
-//ne ocde
+  //ne ocde
 
-const getTaskTypeFromMessage = (messageText) => {
-  const action = quickActions.find((action) =>
-    messageText.includes(action.value)
-  );
-  return action ? action.label.toLowerCase() : null;
-};
+  const getTaskTypeFromMessage = (messageText) => {
+    const action = quickActions.find((action) =>
+      messageText.includes(action.value)
+    );
+    return action ? action.label.toLowerCase() : null;
+  };
 
-const sendMessageToFirestore = async (imageUrl=null) => {
- // const isTaskCreation = inputMessage.includes("@TaskCreate");
- const taskType = getTaskTypeFromMessage(inputMessage); 
- const isTask = !!taskType;
+  const sendMessageToFirestore = async (imageUrl = null) => {
+    // const isTaskCreation = inputMessage.includes("@TaskCreate");
+    const taskType = getTaskTypeFromMessage(inputMessage);
+    const isTask = !!taskType;
 
-  // 1. If message contains @TaskCreate, create task
-  if (isTask) {
-    const taskData = {
-      taskDescription: inputMessage,
-      createdBy: displayedPatronEmail,
-      priority:"Medium",
-      partonName:displayedPatronName,
-       partonNewName:displayNewName,
-      patronHarmoneyID:displayedPatronId,
-       patronID:displaypatronBusinessID,
-      patronNewID:displayNewID,
-      createdAt: serverTimestamp(),
-      status: "created",
-      relatedMessageText: inputMessage,
-      remarks:"",
-      taskAssignDate:serverTimestamp(),
-      taskStatusCategory:"To be Started",
-      taskInput:inputMessage,
-      isCuratorTask:false,
-      taskSubject:inputMessage,
-      assignedLMName:displayedLMName,
-      patronclientCode:displayClientCode,
-      patronBillingAdress:displayPatronBillingAdress,
-      backupLMName:displayedBackupLMName,
-      status: `${taskType}_created`,
-      type: isTask ? "task" : imageUrl ? "image" : audioUrl ? "audio" : "text",
-      taskType: taskType || null,
+    // 1. If message contains @TaskCreate, create task
+    if (isTask) {
+      const taskData = {
+        // taskDescription: inputMessage,
+        // createdBy: displayedPatronEmail,
+        // priority: "Medium",
+        // partonName: displayedPatronName,
+        // patronNewName: displayNewName,
+        // patronHarmoneyID: displayedPatronId,
+        // patronID: displaypatronBusinessID,
+        // patronNewID: displayNewID,
+        // createdAt: serverTimestamp(),
+        // status: "created",
+        // relatedMessageText: inputMessage,
+        // remarks: "",
+        // taskAssignDate: serverTimestamp(),
+        // taskStatusCategory: "To be Started",
+        // taskInput: inputMessage,
+        // isCuratorTask: false,
+        // taskSubject: inputMessage,
+        // assignedLMName: displayedLMName,
+        // patronclientCode: displayClientCode,
+        // patronBillingAdress: displayPatronBillingAdress,
+        // backupLMName: displayedBackupLMName,
+        // // status: `${taskType}_created`,
+        // type: isTask
+        //   ? "task"
+        //   : imageUrl
+        //   ? "image"
+        //   : audioUrl
+        //   ? "audio"
+        //   : "text",
+        // taskType: taskType || null,
+        // patronRef: patronRef1,
+        // lmRef: lmRef,
+        // taskDate: serverTimestamp(),
+        // taskAssignDate: serverTimestamp(),
+        // taskDueDate: serverTimestamp(),
+        // taskRecievedTime: serverTimestamp(),
+        // taskCategory: "buy",
+        // taskSubCategory: "buy",
+        // categoryTag: "buy",
+        // // createdAt: serverTimestamp(),
+        // isTaskDisabled: false,
+        // taskSubject: inputMessage,
+        // billingModel: "billable",
 
-      
-    };
+         taskSubject: inputMessage,
+  taskDescription: inputMessage,
+  taskCategory: "",
+  taskSubCategory: "",
+  categoryTag: "",
+  taskAssignDate: serverTimestamp(), // or use: new Date(assignDate)
+  taskDueDate: serverTimestamp(),    // or use: new Date(dueDate)
+  assignedLMName: displayedLMName,   // set this value from logged-in user
+  billingModel: "",
+  priority: "Medium",
+  patronId: displayClientCode,       // or the equivalent of widget.patron.clientCode
+  partonName: displayedPatronName,     // NOTE: 'partonName' used in Dart too
+  patronRef: patronRef1,             // get reference from Firestore if needed
+  createdAt: serverTimestamp(),
+  createdBy: displayedPatronEmail,         // harmonyUser.email equivalent
+  isTaskDisabled: false,
+  taskStatusCategory: "To be Started",
+  lmRef: lmRef,                      // set as Firestore userRef
+  patronID: displayClientCode,       // duplicate of patronId, keep only if needed
+  refImage: "" 
+      };
 
-    const taskRef = await addDoc(collection(db, "createTaskCollection"), taskData);
+      const taskRef = await addDoc(
+        collection(db, "createTaskCollection"),
+        taskData
+      );
 
-    // 2. Add task message in chat
-    await addDoc(chatRef, {
-      text: inputMessage,
-      taskId: taskRef.id,
-      taskDescription: inputMessage,
-      imageUrl: imageUrl || null,
-      audioUrl: null,
-      senderId: displayedPatronId,
-      senderName: displayedPatronName,
-      timestamp: serverTimestamp(),
-      senderType: "patron",
-      isFromPatron: true,
-     status: `${taskType}_created`,
-      type: isTask ? "task" : imageUrl ? "image" : audioUrl ? "audio" : "text",
-      taskType: taskType || null, // Save only if task
-    isAction: isTask,
-    });
+      // 2. Add task message in chat
+      await addDoc(chatRef, {
+        text: inputMessage,
+        taskId: taskRef.id,
+        taskDescription: inputMessage,
+        imageUrl: imageUrl || null,
+        audioUrl: null,
+        senderId: displayedPatronId,
+        senderName: displayedPatronName,
+        timestamp: serverTimestamp(),
+        senderType: "patron",
+        isFromPatron: true,
+        status: "sent",
+        type: isTask
+          ? "task"
+          : imageUrl
+          ? "image"
+          : audioUrl
+          ? "audio"
+          : "text",
+        taskType: taskType || null, // Save only if task
+        isAction: isTask,
+      });
 
-    // alert("✅ Task created successfully!");
-    toast.success('Task created successfully!')
-  } else {
-    // 3. Normal message or image
-    await addDoc(chatRef, {
-      text: inputMessage || "",
-      imageUrl: imageUrl || null,
-      audioUrl: null,
-      senderId: displayedPatronId,
-      senderName: displayedPatronName,
-      timestamp: serverTimestamp(),
-      senderType: "patron",
-      isFromPatron: true,
-     status: `${taskType}_created`,
-      type: imageUrl ? "image" : "text",
-    });
-  }
+      // alert("✅ Task created successfully!");
+      toast.success("Task created successfully!");
+    } else {
+      // 3. Normal message or image
+      await addDoc(chatRef, {
+        text: inputMessage || "",
+        imageUrl: imageUrl || null,
+        audioUrl: null,
+        senderId: displayedPatronId,
+        senderName: displayedPatronName,
+        timestamp: serverTimestamp(),
+        senderType: "patron",
+        isFromPatron: true,
+        status: `${taskType}_created`,
+        type: imageUrl ? "image" : "text",
+      });
+    }
 
-  setInputMessage("");
-  setImageFile(null);
-  setImagePreview(null);
+    setInputMessage("");
+    setImageFile(null);
+    setImagePreview(null);
 
-  fetchMessages(); // 🔁 Re-fetch messages
-};
+    fetchMessages(); // 🔁 Re-fetch messages
+  };
 
-//new code
+  //new code
 
   const handleChange = (e) => {
     setInputMessage(e.target.value);
@@ -307,99 +383,142 @@ const sendMessageToFirestore = async (imageUrl=null) => {
     clearTimeout(longPressTimer.current);
   };
 
-const handleViewTask = async (taskId) => {
-  const taskDoc = await getDoc(doc(db, "createTaskCollection", taskId));
-  if (taskDoc.exists()) {
-    setSelectedTask({ id: taskDoc.id, ...taskDoc.data() });
-    setIsDialogOpen(true);
-  }
-};
-
-
-
-const convertMessageToTask = async (message) => {
-  const taskType = getTaskTypeFromMessage(message.text) || "general";
-
-  const taskData = {
-    taskDescription: message.text,
-    createdBy: displayedPatronEmail,
-    priority: "Medium",
-    partonName: displayedPatronName,
-    partonNewName: displayNewName,
-    patronHarmoneyID: displayedPatronId,
-    patronID: displaypatronBusinessID,
-    patronNewID: displayNewID,
-    createdAt: serverTimestamp(),
-    status: "created",
-    remarks: "",
-    relatedMessageText: message.text,
-    taskAssignDate: serverTimestamp(),
-    taskStatusCategory: "To be Started",
-    taskInput: message.text,
-    isCuratorTask: false,
-    taskSubject: message.text,
-    assignedLMName: displayedLMName,
-    patronclientCode: displayClientCode,
-    patronBillingAdress: displayPatronBillingAdress,
-    backupLMName: displayedBackupLMName,
-    taskType,
+  const handleViewTask = async (taskId) => {
+    const taskDoc = await getDoc(doc(db, "createTaskCollection", taskId));
+    if (taskDoc.exists()) {
+      setSelectedTask({ id: taskDoc.id, ...taskDoc.data() });
+      setIsDialogOpen(true);
+    }
   };
 
-  // 1. Add to task collection
-  const taskRef = await addDoc(collection(db, "createTaskCollection"), taskData);
+  const convertMessageToTask = async (message) => {
+    const taskType = getTaskTypeFromMessage(message.text) || "general";
 
-  // 2. Update existing message to become a task
-  const msgRef = doc(db, "addPatronDetails", displayedPatronId, "messages", message.id); // update with correct collection path
-  await updateDoc(msgRef, {
-    taskId: taskRef.id,
-    taskDescription: message.text,
-    type: "task",
-    status: `${taskType}_created`,
-    isAction: true,
-    taskType,
-  });
-  toast.success("Task created from message!");
-  fetchMessages(); // refresh UI
-};
+    const taskData = {
+    //   taskDescription: message.text,
+    //   createdBy: displayedPatronEmail,
+    //   priority: "Medium",
+    //  // partonName: displayedPatronName,
+    //    partonName: displayedPatronName,
+    //   patronNewName: displayNewName,
+    //   patronHarmoneyID: displayedPatronId,
+    //   patronID: displaypatronBusinessID,
+    //   patronNewID: displayNewID,
+    //   createdAt: serverTimestamp(),
+    //   status: "created",
+    //   remarks: "",
+    //   relatedMessageText: message.text,
+    //   taskAssignDate: serverTimestamp(),
+    //   taskStatusCategory: "To be Started",
+    //   taskInput: message.text,
+    //   isCuratorTask: false,
+    //   taskSubject: message.text,
+    //   assignedLMName: displayedLMName,
+    //   patronclientCode: displayClientCode,
+    //   patronBillingAdress: displayPatronBillingAdress,
+    //   backupLMName: displayedBackupLMName,
+    //   patronRef: patronRef1,
+    //   taskType,
+    //   lmRef: lmRef,
+    //   taskDate: serverTimestamp(),
+    //   taskAssignDate: serverTimestamp(),
+    //   taskDueDate: serverTimestamp(),
+    //   taskRecievedTime: serverTimestamp(),
+    //   taskCategory: "buy",
+    //   taskSubCategory: "by",
+    //   categoryTag: "bu",
+    //   // createdAt: serverTimestamp(),
+    //   isTaskDisabled: false,
+    //   taskSubject: inputMessage,
+    //   billingModel: "billable",
 
+  taskSubject: message?.text,
+  taskDescription: message?.text,
+  taskCategory: "",
+  taskSubCategory: "",
+  categoryTag: "",
+  taskAssignDate: serverTimestamp(), // or use: new Date(assignDate)
+  taskDueDate: serverTimestamp(),    // or use: new Date(dueDate)
+  assignedLMName: displayedLMName,   // set this value from logged-in user
+  billingModel: "",
+  priority: "Medium",
+  patronId: displayClientCode,       // or the equivalent of widget.patron.clientCode
+  partonName: displayedPatronName,     // NOTE: 'partonName' used in Dart too
+  patronRef: patronRef1,             // get reference from Firestore if needed
+  createdAt: serverTimestamp(),
+  createdBy: displayedPatronEmail,         // harmonyUser.email equivalent
+  isTaskDisabled: false,
+  taskStatusCategory: "To be Started",
+  lmRef: lmRef,                      // set as Firestore userRef
+  patronID: displayClientCode,       // duplicate of patronId, keep only if needed
+  refImage: "", 
+    };
 
+    // 1. Add to task collection
+    const taskRef = await addDoc(
+      collection(db, "createTaskCollection"),
+      taskData
+    );
 
-const cancelTask = async (message) => {
-  try {
-    const taskId = message.taskId;
-    const messageId = message.id;
-
-    // ✅ Update task status in `createTaskCollection`
-    const taskRef = doc(db, "createTaskCollection", taskId);
-    await updateDoc(taskRef, {
-      status: "cancelled",
-      taskStatusCategory: "Cancelled",
-      cancelledBy: displayedPatronEmail,
-      cancelledById: displayedPatronId,
-      cancelledAt: new Date(),
-    });
-
-    // ✅ Update related message status in `addPatronDetails/{id}/messages`
-    const msgRef = doc(db, "addPatronDetails", displayedPatronId, "messages", messageId);
+    // 2. Update existing message to become a task
+    const msgRef = doc(
+      db,
+      "addPatronDetails",
+      displayedPatronId,
+      "messages",
+      message.id
+    ); // update with correct collection path
     await updateDoc(msgRef, {
-      status: "cancelled",
+      taskId: taskRef.id,
+      taskDescription: message.text,
+      type: "task",
+      status: `${taskType}_created`,
+      isAction: true,
+      taskType,
     });
+    toast.success("Task created from message!");
+    fetchMessages(); // refresh UI
+  };
 
-    toast.success("✅ Task cancelled successfully!");
-    fetchMessages(); // optional: reload chat
-  } catch (error) {
-    console.error("❌ Error cancelling task:", error);
-    toast.error("❌ Failed to cancel task.");
-  }
-};
+  const cancelTask = async (message) => {
+    try {
+      const taskId = message.taskId;
+      const messageId = message.id;
+
+      // ✅ Update task status in `createTaskCollection`
+      const taskRef = doc(db, "createTaskCollection", taskId);
+      await updateDoc(taskRef, {
+        status: "cancelled",
+        taskStatusCategory: "Cancelled",
+        cancelledBy: displayedPatronEmail,
+        cancelledById: displayedPatronId,
+        cancelledAt: new Date(),
+      });
+
+      // ✅ Update related message status in `addPatronDetails/{id}/messages`
+      const msgRef = doc(
+        db,
+        "addPatronDetails",
+        displayedPatronId,
+        "messages",
+        messageId
+      );
+      await updateDoc(msgRef, {
+        status: "cancelled",
+      });
+
+      toast.success("✅ Task cancelled successfully!");
+      fetchMessages(); // optional: reload chat
+    } catch (error) {
+      console.error("❌ Error cancelling task:", error);
+      toast.error("❌ Failed to cancel task.");
+    }
+  };
 
   return (
     <ProtectedLayout>
-      <Toaster
-  position="top-right"
-  reverseOrder={false}
-/>
-      
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="flex flex-col h-screen bg-background">
         {/* Header */}
         <div className="border-b border-border px-4 py-4 sm:px-6 lg:px-8">
@@ -429,8 +548,8 @@ const cancelTask = async (message) => {
         {/* Chat Messages */}
         <div className="flex-1 overflow-hidden ">
           <div className="h-full flex flex-col px-4 sm:px-6 lg:px-8">
-            <div className="flex-1 overflow-y-auto py-6 space-y-6">
-              {messages.map((message) => (
+            <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col-reverse gap-6">
+              {[...messages].reverse().map((message) => (
                 <div
                   key={message.id}
                   className={`group relative flex items-start space-x-3 ${
@@ -478,21 +597,23 @@ const cancelTask = async (message) => {
                         {message.type === "task" && (
                           <div className="mt-3 p-4 bg-[#1e2a38] text-white rounded-xl shadow-lg border border-blue-500 space-y-2">
                             <div className="text-sm font-semibold">
-                            {message.status === "cancelled" ? "❌ Task Cancelled" : "📝 Task Created"}
+                              {message.status === "cancelled"
+                                ? "❌ Task Cancelled"
+                                : "📝 Task Created"}
                             </div>
                             {/* <div className="text-xs text-gray-300">{message.text}</div> */}
                             {/* <div className="text-xs text-gray-400">
                                       {new Date(message.timestamp?.seconds * 1000).toLocaleTimeString()}
                                </div> */}
-                           
+
                             {message.status !== "cancelled" && (
-      <button
-        onClick={() => handleViewTask(message.taskId)}
-        className="mt-1 text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full"
-      >
-        View Details
-      </button>
-    )}
+                              <button
+                                onClick={() => handleViewTask(message.taskId)}
+                                className="mt-1 text-xs bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full"
+                              >
+                                View Details
+                              </button>
+                            )}
                           </div>
                         )}
 
@@ -500,66 +621,66 @@ const cancelTask = async (message) => {
                       </div>
 
                       {/* Context Menu */}
-                     
-{/* new code for 3 dots and option values */}
 
-<div
-  className="absolute top-2 right-2 hidden group-hover:block cursor-pointer"
-  onClick={() =>
-    setShowMenuId((prev) => (prev === message.id ? null : message.id))
-  }
->
-  <MoreVertical className="w-4 h-4 text-white" />
-</div>
+                      {/* new code for 3 dots and option values */}
 
-{/* Context Menu */}
-{showMenuId === message.id && (
-  <div
-    className="absolute z-10 top-8 right-2 bg-white text-black text-sm rounded-md shadow-lg w-44"
-    onMouseLeave={() => setShowMenuId(null)}
-  >
-    {/* {message.taskId ? */}
-     {message.status === "cancelled" ? null : message.taskId ?
-     (
-      // Task already created — show cancel option
-      <button
-        className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-        onClick={() => {
-          setShowMenuId(null);
-          cancelTask(message)
-        }}
-      >
-        Cancel Task
-      </button>
-    ) : (
-      // Task not created — show creation options
-      <>
-        <button
-          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-          onClick={() => {
-            console.log("Create Task", message);
-            setShowMenuId(null);
-            convertMessageToTask(message);
-            // handleCreateTaskFromMessage(message)
-          }}
-        >
-          Create Task
-        </button>
-        {/* <button
-          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-          onClick={() => {
-            console.log("Create Task with AI", message);
-            setShowMenuId(null);
-          }}
-        >
-          Create Task with AI
-        </button> */}
-      </>
-    )}
-  </div>
-)}
+                      <div
+                        className="absolute top-2 right-2 hidden group-hover:block cursor-pointer"
+                        onClick={() =>
+                          setShowMenuId((prev) =>
+                            prev === message.id ? null : message.id
+                          )
+                        }
+                      >
+                        <MoreVertical className="w-4 h-4 text-white" />
+                      </div>
 
-
+                      {/* Context Menu */}
+                      {showMenuId === message.id && (
+                        <div
+                          className="absolute z-10 top-8 right-2 bg-white text-black text-sm rounded-md shadow-lg w-44"
+                          onMouseLeave={() => setShowMenuId(null)}
+                        >
+                          {/* {message.taskId ? */}
+                          {message.status ===
+                          "cancelled" ? null : message.taskId ? (
+                            // Task already created — show cancel option
+                            <button
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                              onClick={() => {
+                                setShowMenuId(null);
+                                cancelTask(message);
+                              }}
+                            >
+                              Cancel Task
+                            </button>
+                          ) : (
+                            // Task not created — show creation options
+                            <>
+                              <button
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  console.log("Create Task", message);
+                                  setShowMenuId(null);
+                                  convertMessageToTask(message);
+                                  // handleCreateTaskFromMessage(message)
+                                }}
+                              >
+                                Create Task
+                              </button>
+                              {/* <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    console.log("Create Task with AI", message);
+                     setShowMenuId(null);
+                    }}
+                   >
+                   Create Task with AI
+                  </button> */}
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Timestamp */}
@@ -637,7 +758,7 @@ const cancelTask = async (message) => {
             <div className="border-t border-border py-4 bg-background ">
               <form
                 onSubmit={handleSendMessage}
-                className="p-4 border-t flex items-center space-x-2 mb-8 sm:mb-0 "
+                className="p-4 border-t flex items-center space-x-2 mb-8 sm:mb-0"
               >
                 <input
                   type="file"
@@ -686,7 +807,7 @@ const cancelTask = async (message) => {
                     )}
                   </div>
                 )}
-{/* <Toaster position="top-right" /> */}
+                {/* <Toaster position="top-right" /> */}
                 <Button
                   type="submit"
                   disabled={isUploading || (!inputMessage.trim() && !imageFile)}
@@ -700,11 +821,11 @@ const cancelTask = async (message) => {
         </div>
       </div>
       <TaskDialog
-  isOpen={isDialogOpen}
-  onClose={() => setIsDialogOpen(false)}
-  taskData={selectedTask}
-  onUpdate={() => fetchMessages()}
-/>
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        taskData={selectedTask}
+        onUpdate={() => fetchMessages()}
+      />
     </ProtectedLayout>
   );
 }

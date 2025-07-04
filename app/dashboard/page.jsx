@@ -20,6 +20,7 @@ import ShimmerDashboard from "../../components/shimmerui/ShimmerDashboard";
 import { getDocs, collection, query, where, doc } from "firebase/firestore";
 import { db } from "../firebase/config"; // your Firebase config path
 import TaskListCard from "../../components/TaskListCard";
+import ThemeColor from "../../components/ThemeColor"
 export default function DashboardPage() {
   const {
     currentUser,
@@ -39,6 +40,7 @@ export default function DashboardPage() {
     thisMonthExpense: 0,
     thisMonthTasks: 0,
   });
+  const [tasks,setTasks]= useState([]);
 
   // ✅ Safe patronId
   const displayedPatronId =
@@ -208,6 +210,8 @@ export default function DashboardPage() {
             <p className="mt-2 text-muted-foreground">
               Here's what's happening in your home
             </p>
+           
+             
           </div>
           {/*  Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -240,6 +244,7 @@ export default function DashboardPage() {
         </div>
         <TaskListCard />
       </div>
+
     </ProtectedLayout>
   );
 }

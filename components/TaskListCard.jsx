@@ -166,7 +166,7 @@ export default function TaskListCard() {
 //         </div>
 //       </CardContent>
 //     </Card>
-<Card className="w-full bg-white shadow-sm rounded-md">
+   <Card className="w-full bg-white shadow-sm rounded-md">
   <CardContent className="p-4">
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-lg font-semibold text-foreground">Task Report</h2>
@@ -195,7 +195,7 @@ export default function TaskListCard() {
         </TableHeader>
       </Table>
 
-      {/* Scrollable Body */}
+     
       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
         <Table>
           <TableBody>
@@ -213,7 +213,7 @@ export default function TaskListCard() {
                     {task.taskDescription || "—"}
                   </TableCell>
                   <TableCell className=" w-1/4 text-muted-foreground break-words">
-                    {task.lastComment || "—"}
+                    {task.lastComment?.text || "—"}
                   </TableCell>
                   <TableCell className="w-1/4">
                     <Badge
@@ -252,6 +252,98 @@ export default function TaskListCard() {
     </div>
   </CardContent>
 </Card>
+
+
+
+
+//  <Card className="w-full bg-white dark:bg-zinc-900 shadow-sm rounded-md text-foreground dark:text-white">
+//   <CardContent className="p-3 sm:p-4">
+   
+//     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+//       <h2 className="text-base sm:text-lg font-semibold">Task Report</h2>
+//       <select
+//         value={filter}
+//         onChange={(e) => setFilter(e.target.value)}
+//         className="border border-border dark:border-zinc-700 bg-background dark:bg-zinc-800 px-3 py-1 rounded-md text-sm"
+//       >
+//         <option value="all">All</option>
+//         <option value="to be started">To Be Started</option>
+//         <option value="in process">In Progress</option>
+//       </select>
+//     </div>
+
+   
+//     <div className="w-full overflow-x-auto">
+//       <div className="min-w-[700px]">
+      
+//         <Table>
+//           <TableHeader>
+//             <TableRow>
+              
+//               <TableHead className="w-1/4">Description</TableHead>
+//               <TableHead className="w-1/4">Last Comment</TableHead>
+//               <TableHead className="w-1/4">Status</TableHead>
+            
+//               <TableHead className="w-1/4">Due Date</TableHead>
+//             </TableRow>
+//           </TableHeader>
+//         </Table>
+
+    
+//         <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+//           <Table>
+//             <TableBody>
+//               {loading ? (
+//                 <TableRow>
+//                   <TableCell colSpan={6}>
+//                     <ShimmerTasks />
+//                   </TableCell>
+//                 </TableRow>
+//               ) : tasks?.length > 0 ? (
+//                 tasks.map((task, index) => (
+//                   <TableRow key={task?.id}>
+                  
+//                     <TableCell className="max-w-[100px] break-words truncate">
+//                       {task?.taskDescription || "—"}
+//                     </TableCell>
+//                     <TableCell className="max-w-[100px] text-muted-foreground break-words truncate">
+//                       {task?.lastComment || "—"}
+//                     </TableCell>
+//                     <TableCell>
+//                       <Badge
+//                         variant={getStatusVariant(task.taskStatusCategory)}
+//                         className={
+//                           task?.taskStatusCategory?.toLowerCase() === "completed"
+//                             ? "bg-green-500 text-white max-w-[100px]"
+//                             : "bg-muted text-foreground dark:bg-zinc-700 dark:text-white max-w-[100px]"
+//                         }
+//                       >
+//                         {task?.taskStatusCategory || "Unknown"}
+//                       </Badge>
+//                     </TableCell>
+                   
+//                     <TableCell className="text-muted-foreground max-w-[100px]">
+//                       {task.taskDueDate?.toDate
+//                         ? new Date(task.taskDueDate?.toDate()).toLocaleDateString()
+//                         : "—"}
+//                     </TableCell>
+//                   </TableRow>
+//                 ))
+//               ) : (
+//                 <TableRow>
+//                   <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+//                     No tasks found
+//                   </TableCell>
+//                 </TableRow>
+//               )}
+//             </TableBody>
+//           </Table>
+//         </div>
+//       </div>
+//     </div>
+//   </CardContent>
+// </Card>
+
 
   );
 }
